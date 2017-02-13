@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 	
+	"github.com/solkaz/cfm-go/filehandler"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -48,6 +50,16 @@ var (
 )
 
 func main() {
+	currentUser, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	homedir := currentUser.HomeDir
+	c, err := filehandler.LoadDataFile(homedir + "/.cfm")
+	if err != nil {
+		panic(err)
+	}
+	
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 	case list.FullCommand():
 		if len(*listAliases) == 0 {
