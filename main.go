@@ -65,7 +65,7 @@ func main() {
 		c.ListAliases(listAliases)
 
 	case search.FullCommand():
-		fmt.Printf("searching for %q...\n", *searchAlias)
+		c.SearchAliases(*searchAlias)
 
 	case add.FullCommand():
 		fmt.Printf("Mapping %q to %q\n", *addAlias, *addFilePath)

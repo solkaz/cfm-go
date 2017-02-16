@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"github.com/solkaz/cfm-go/utils"
 )
@@ -46,6 +47,29 @@ func (c *CfmConfig) ListAliases(aliases *[]string) {
 			}
 		}
 	}
+}
+
+func (c *CfmConfig) SearchAliases(phrase string) {
+	var matchedAliases []string
+	//
+	for alias := range c.Aliases {
+		if strings.Contains(alias, phrase) {
+			matchedAliases = append(matchedAliases, alias)
+		}
+	}
+	if len(matchedAliases) != 0 {
+		for _, alias := range matchedAliases {
+			fmt.Println(utils.MapAliasString(alias, c.Aliases[alias]))
+		}
+	} else {
+		fmt.Printf("No aliases found for %s\n", phrase)
+	}
+}
+
+// MakeEditorCommand returns a string that will invoke the user's preferred
+// editor to edit their config files
+func (c *CfmConfig) MakeEditorCommand() string {
+	return c.E.Command + strings.Join(c.E.Flags, " ")
 }
 
 // LoadDataFile ...
