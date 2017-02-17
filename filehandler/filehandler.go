@@ -68,11 +68,19 @@ func (c *CfmConfig) SearchAliases(phrase string) {
 }
 
 // AddAlias ...
-func (c *CfmConfig) AddAlias(alias, filepath string) {
+func (c *CfmConfig) AddAlias(alias, filepath string, force bool) {
 	// Check that the file is not already in the CFM configuration;
-	if c.Aliases.IsValidAlias(alias) {
+	if c.Aliases.IsValidAlias(alias) && !force {
 		fmt.Printf("Alias %s is already mapped to %s\n", alias, c.Aliases[alias])
 		return
+	}
+	c.Aliases[alias] = filepath
+}
+
+func (c *CfmConfig) RemapAlias(alias, filepath string) {
+	if !c.Aliases.IsValidAlias(alias) {
+		fmt.Printf("Alias %s not saved to the configuration\n", alias)
+		// TODO: Offer to add alias
 	}
 	c.Aliases[alias] = filepath
 }

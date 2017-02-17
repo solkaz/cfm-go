@@ -24,6 +24,7 @@ var (
 	add         = app.Command("add", "add an alias to the .cfm file")
 	addAlias    = add.Arg("alias", "alias for the config file to add").Required().String()
 	addFilePath = add.Arg("filepath", "file path of the config file").Required().String()
+	addForce    = add.Flag("force", "override any previous mapping for this alias").Bool()
 
 	// Remove
 	remove      = app.Command("remove", "remove an alias").Alias("rm")
@@ -69,7 +70,7 @@ func main() {
 		c.SearchAliases(*searchAlias)
 
 	case add.FullCommand():
-		c.AddAlias(*addAlias, *addFilePath)
+		c.AddAlias(*addAlias, *addFilePath, *addForce)
 		err = filehandler.SaveDataFile(cfmFilePath, c)
 		if err != nil {
 			fmt.Println(err)
@@ -82,7 +83,11 @@ func main() {
 		fmt.Printf("Removed %q\n", *removeAlias)
 
 	case remap.FullCommand():
-		fmt.Printf("Remapping %q to %q\n", *remapAlias, *remapFilePath)
+		c.RemapAlias(*remapAlias, *remapFilePath)
+		err = filehandler.SaveDataFile(cfmFilePath, c)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 	case check.FullCommand():
 		fmt.Printf("Checking %q\n", *checkAlias)
