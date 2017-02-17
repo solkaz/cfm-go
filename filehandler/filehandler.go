@@ -18,6 +18,7 @@ type EditorConfig struct {
 // AliasMap maps an
 type AliasMap map[string]string
 
+// IsValidAlias ...
 func (a AliasMap) IsValidAlias(alias string) bool {
 	_, ok := a[alias]
 	return ok
@@ -68,23 +69,28 @@ func (c *CfmConfig) SearchAliases(phrase string) {
 }
 
 // AddAlias ...
-func (c *CfmConfig) AddAlias(alias, filepath string, force bool) {
+func (c *CfmConfig) AddAlias(alias, filepath string, force bool) bool {
 	// Check that the file is not already in the CFM configuration;
 	if c.Aliases.IsValidAlias(alias) && !force {
 		fmt.Printf("Alias %s is already mapped to %s\n", alias, c.Aliases[alias])
-		return
+		return false
 	}
 	c.Aliases[alias] = filepath
+	return true
 }
 
-func (c *CfmConfig) RemapAlias(alias, filepath string) {
+// RemapAlias ...
+func (c *CfmConfig) RemapAlias(alias, filepath string) bool {
 	if !c.Aliases.IsValidAlias(alias) {
 		fmt.Printf("Alias %s not saved to the configuration\n", alias)
+		return false
 		// TODO: Offer to add alias
 	}
 	c.Aliases[alias] = filepath
+	return true
 }
 
+// RemoveAlias ...
 func (c *CfmConfig) RemoveAlias(alias string, force bool) bool {
 	if c.Aliases.IsValidAlias(alias) {
 		if !force && !utils.ConfirmAction(fmt.Sprintf("Remove alias %s", alias)) {
@@ -96,6 +102,18 @@ func (c *CfmConfig) RemoveAlias(alias string, force bool) bool {
 	if !force {
 		fmt.Printf("%s does not exist", alias)
 	}
+	return false
+}
+
+// RenameAlias ...
+func (c *CfmConfig) RenameAlias(oldAlias, newAlias string) bool {
+	if c.Aliases.IsValidAlias(oldAlias) {
+		filepath := c.Aliases[oldAlias]
+		delete(c.Aliases, oldAlias)
+		c.Aliases[newAlias] = filepath
+		return true
+	}
+	fmt.Printf("Alias %s not saved to the configuration", oldAlias)
 	return false
 }
 

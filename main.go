@@ -70,31 +70,47 @@ func main() {
 		c.SearchAliases(*searchAlias)
 
 	case add.FullCommand():
-		c.AddAlias(*addAlias, *addFilePath, *addForce)
-		err = filehandler.SaveDataFile(cfmFilePath, c)
-		if err != nil {
-			fmt.Println(err)
+		didExecute := c.AddAlias(*addAlias, *addFilePath, *addForce)
+		// Only save to the file if the CfmConfig object was mutated
+		if didExecute {
+			err = filehandler.SaveDataFile(cfmFilePath, c)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 
 	case remove.FullCommand():
-		c.RemoveAlias(*removeAlias, *removeForce)
-		err = filehandler.SaveDataFile(cfmFilePath, c)
-		if err != nil {
-			fmt.Println(err)
+		didExecute := c.RemoveAlias(*removeAlias, *removeForce)
+		// Only save to the file if the CfmConfig object was mutated
+		if didExecute {
+			err = filehandler.SaveDataFile(cfmFilePath, c)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 
 	case remap.FullCommand():
-		c.RemapAlias(*remapAlias, *remapFilePath)
-		err = filehandler.SaveDataFile(cfmFilePath, c)
-		if err != nil {
-			fmt.Println(err)
+		didExecute := c.RemapAlias(*remapAlias, *remapFilePath)
+		// Only save to the file if the CfmConfig object was mutated
+		if didExecute {
+			err = filehandler.SaveDataFile(cfmFilePath, c)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 
 	case check.FullCommand():
 		fmt.Printf("Checking %q\n", *checkAlias)
 
 	case rename.FullCommand():
-		fmt.Printf("Renaming %q to %q\n", *renameOldAlias, *renameNewAlias)
+		didExecute := c.RenameAlias(*renameOldAlias, *renameNewAlias)
+		// Only save to the file if the CfmConfig object was mutated
+		if didExecute {
+			err = filehandler.SaveDataFile(cfmFilePath, c)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
 
 	case edit.FullCommand():
 		fmt.Printf("Editing %q\n", *editAlias)
