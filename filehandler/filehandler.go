@@ -49,6 +49,7 @@ func (c *CfmConfig) ListAliases(aliases *[]string) {
 	}
 }
 
+// SearchAliases ...
 func (c *CfmConfig) SearchAliases(phrase string) {
 	var matchedAliases []string
 	//
@@ -64,6 +65,16 @@ func (c *CfmConfig) SearchAliases(phrase string) {
 	} else {
 		fmt.Printf("No aliases found for %s\n", phrase)
 	}
+}
+
+// AddAlias ...
+func (c *CfmConfig) AddAlias(alias, filepath string) {
+	// Check that the file is not already in the CFM configuration;
+	if c.Aliases.IsValidAlias(alias) {
+		fmt.Printf("Alias %s is already mapped to %s\n", alias, c.Aliases[alias])
+		return
+	}
+	c.Aliases[alias] = filepath
 }
 
 // MakeEditorCommand returns a string that will invoke the user's preferred
@@ -85,4 +96,13 @@ func LoadDataFile(filepath string) (c CfmConfig, e error) {
 		return
 	}
 	return
+}
+
+// SaveDataFile writes the data in c to the .cfm file
+func SaveDataFile(filepath string, c CfmConfig) error {
+	b, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filepath, b, 0644)
 }

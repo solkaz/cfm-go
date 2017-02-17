@@ -54,8 +54,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	homedir := currentUser.HomeDir
-	c, err := filehandler.LoadDataFile(homedir + "/.cfm")
+	cfmFilePath := currentUser.HomeDir + "/.cfm"
+
+	c, err := filehandler.LoadDataFile(cfmFilePath)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +69,11 @@ func main() {
 		c.SearchAliases(*searchAlias)
 
 	case add.FullCommand():
-		fmt.Printf("Mapping %q to %q\n", *addAlias, *addFilePath)
+		c.AddAlias(*addAlias, *addFilePath)
+		err = filehandler.SaveDataFile(cfmFilePath, c)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 	case remove.FullCommand():
 		if !(*removeForce) {
