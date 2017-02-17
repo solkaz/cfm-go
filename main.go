@@ -77,10 +77,11 @@ func main() {
 		}
 
 	case remove.FullCommand():
-		if !(*removeForce) {
-			fmt.Printf("Remove %q?\n", *removeAlias)
+		c.RemoveAlias(*removeAlias, *removeForce)
+		err = filehandler.SaveDataFile(cfmFilePath, c)
+		if err != nil {
+			fmt.Println(err)
 		}
-		fmt.Printf("Removed %q\n", *removeAlias)
 
 	case remap.FullCommand():
 		c.RemapAlias(*remapAlias, *remapFilePath)

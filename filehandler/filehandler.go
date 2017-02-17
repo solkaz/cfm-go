@@ -85,6 +85,20 @@ func (c *CfmConfig) RemapAlias(alias, filepath string) {
 	c.Aliases[alias] = filepath
 }
 
+func (c *CfmConfig) RemoveAlias(alias string, force bool) bool {
+	if c.Aliases.IsValidAlias(alias) {
+		if !force && !utils.ConfirmAction(fmt.Sprintf("Remove alias %s", alias)) {
+			return false
+		}
+		delete(c.Aliases, alias)
+		return true
+	}
+	if !force {
+		fmt.Printf("%s does not exist", alias)
+	}
+	return false
+}
+
 // MakeEditorCommand returns a string that will invoke the user's preferred
 // editor to edit their config files
 func (c *CfmConfig) MakeEditorCommand() string {
