@@ -100,7 +100,7 @@ func main() {
 		}
 
 	case check.FullCommand():
-		fmt.Printf("Checking %q\n", *checkAlias)
+		c.Check(*checkAlias)
 
 	case rename.FullCommand():
 		didExecute := c.RenameAlias(*renameOldAlias, *renameNewAlias)

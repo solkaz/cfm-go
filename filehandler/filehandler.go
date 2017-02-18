@@ -33,6 +33,19 @@ type CfmConfig struct {
 	E       EditorConfig `json:"editor"`
 }
 
+// Check determines whether the file exists at the location the alias is mapped to
+func (c *CfmConfig) Check(alias string) {
+	if c.Aliases.IsValidAlias(alias) {
+		if _, err := os.Stat(c.Aliases[alias]); os.IsNotExist(err) {
+			fmt.Printf("File doesn't exist at %s for alias %s\n", c.Aliases[alias], alias)
+			return
+		}
+		fmt.Printf("File exists at %s for alias %s\n", c.Aliases[alias], alias)
+		return
+	}
+	fmt.Printf("Alias %s not saved to the configuration\n", alias)
+}
+
 // ListAliases ...
 func (c *CfmConfig) ListAliases(aliases *[]string) {
 	// Print all aliases if there were no specified aliases
@@ -145,12 +158,10 @@ func (c *CfmConfig) EditConfigFile(alias string) {
 func LoadDataFile(filepath string) (c CfmConfig, e error) {
 	b, e := ioutil.ReadFile(filepath)
 	if e != nil {
-		fmt.Println(e.Error())
 		return
 	}
 	e = json.Unmarshal(b, &c)
 	if e != nil {
-		fmt.Println("error: ", e.Error())
 		return
 	}
 	return
