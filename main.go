@@ -113,7 +113,6 @@ func main() {
 		}
 
 	case edit.FullCommand():
-		fmt.Printf("Editing %q\n", *editAlias)
-
+		c.EditConfigFile(*editAlias)
 	}
 }

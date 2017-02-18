@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/solkaz/cfm-go/utils"
@@ -100,7 +103,7 @@ func (c *CfmConfig) RemoveAlias(alias string, force bool) bool {
 		return true
 	}
 	if !force {
-		fmt.Printf("%s does not exist", alias)
+		fmt.Printf("%s does not exist\n", alias)
 	}
 	return false
 }
@@ -119,8 +122,23 @@ func (c *CfmConfig) RenameAlias(oldAlias, newAlias string) bool {
 
 // MakeEditorCommand returns a string that will invoke the user's preferred
 // editor to edit their config files
-func (c *CfmConfig) MakeEditorCommand() string {
-	return c.E.Command + strings.Join(c.E.Flags, " ")
+
+// EditConfigFile ...
+func (c *CfmConfig) EditConfigFile(alias string) {
+	// Check that the alias exists
+	if c.Aliases.IsValidAlias(alias) {
+		filepath := c.Aliases[alias]
+
+		cmd := exec.Command(c.E.Command, (append([]string{filepath}, c.E.Flags...))...)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			log.Fatal(err)
+		}
+	}
+	fmt.Printf("%s does not exist\n", alias)
 }
 
 // LoadDataFile ...
@@ -140,7 +158,7 @@ func LoadDataFile(filepath string) (c CfmConfig, e error) {
 
 // SaveDataFile writes the data in c to the .cfm file
 func SaveDataFile(filepath string, c CfmConfig) error {
-	b, err := json.Marshal(c)
+	b, err := json.MarshalIndent(c, "", "\t")
 	if err != nil {
 		return err
 	}
