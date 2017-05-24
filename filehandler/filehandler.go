@@ -150,6 +150,7 @@ func (c *CfmConfig) EditConfigFile(alias string) {
 		if err := cmd.Run(); err != nil {
 			log.Fatal(err)
 		}
+		return;
 	}
 	fmt.Printf("%s does not exist\n", alias)
 }
